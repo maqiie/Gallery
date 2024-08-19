@@ -36,3 +36,18 @@
     transform: rotate(360deg);
   }
 }
+
+/* Global CSS Reset */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* Ensure no scrollbars appear */
+}
+
+#root {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
