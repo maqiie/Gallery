@@ -217,28 +217,98 @@ const ScreenSaver = ({ projectId }) => {
   const [mediaFiles, setMediaFiles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false); // Track if media is loaded
   const screenSaverRef = useRef(null);
   const videoRefs = useRef({});
 
+  // Define a variety of transition effects
   const transitionEffects = [
-    // Your transition effects
+    {
+      from: { opacity: 0, transform: "scale(1.2)" },
+      enter: { opacity: 1, transform: "scale(1)" },
+      leave: { opacity: 0, transform: "scale(0.8)" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "translateX(100%)" },
+      enter: { opacity: 1, transform: "translateX(0%)" },
+      leave: { opacity: 0, transform: "translateX(-100%)" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "translateY(-100%)" },
+      enter: { opacity: 1, transform: "translateY(0%)" },
+      leave: { opacity: 0, transform: "translateY(100%)" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "rotate(180deg)" },
+      enter: { opacity: 1, transform: "rotate(0deg)" },
+      leave: { opacity: 0, transform: "rotate(-180deg)" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "scaleX(0.8)", transformOrigin: "left" },
+      enter: { opacity: 1, transform: "scaleX(1)", transformOrigin: "left" },
+      leave: { opacity: 0, transform: "scaleX(0.8)", transformOrigin: "left" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "scaleY(0.8)", transformOrigin: "bottom" },
+      enter: { opacity: 1, transform: "scaleY(1)", transformOrigin: "bottom" },
+      leave: {
+        opacity: 0,
+        transform: "scaleY(0.8)",
+        transformOrigin: "bottom",
+      },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "skewX(15deg)" },
+      enter: { opacity: 1, transform: "skewX(0deg)" },
+      leave: { opacity: 0, transform: "skewX(-15deg)" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "rotateY(90deg)" },
+      enter: { opacity: 1, transform: "rotateY(0deg)" },
+      leave: { opacity: 0, transform: "rotateY(-90deg)" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "scale(0.5)", rotateZ: "45deg" },
+      enter: { opacity: 1, transform: "scale(1)", rotateZ: "0deg" },
+      leave: { opacity: 0, transform: "scale(0.5)", rotateZ: "45deg" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "translateX(100%)", skewX: "30deg" },
+      enter: { opacity: 1, transform: "translateX(0%)", skewX: "0deg" },
+      leave: { opacity: 0, transform: "translateX(-100%)", skewX: "-30deg" },
+      config: { tension: 200, friction: 20 },
+    },
+    {
+      from: { opacity: 0, transform: "scaleY(0.5)" },
+      enter: { opacity: 1, transform: "scaleY(1)" },
+      leave: { opacity: 0, transform: "scaleY(0.5)" },
+      config: { tension: 200, friction: 20 },
+    },
   ];
 
   const [transitionIndex, setTransitionIndex] = useState(0);
 
+  // Fetch media files
   useEffect(() => {
     const loadMedia = async () => {
       try {
         const response = await fetchMedia(projectId);
         if (response.media_files) {
-          const mediaFilesWithAbsoluteUrls = response.media_files.map(
-            (media) => ({
-              ...media,
-              url: new URL(media.url, "https://gallery-db.onrender.com").href,
-            })
-          );
+          const mediaFilesWithAbsoluteUrls = response.media_files.map((media) => ({
+            ...media,
+            url: new URL(media.url, "https://gallery-db.onrender.com").href,
+          }));
           setMediaFiles(mediaFilesWithAbsoluteUrls);
-          console.log("Loaded media files:", mediaFilesWithAbsoluteUrls);
+          setIsLoaded(true); // Mark media as loaded
         } else {
           console.error("Invalid response format:", response);
         }
@@ -250,6 +320,7 @@ const ScreenSaver = ({ projectId }) => {
     loadMedia();
   }, [projectId]);
 
+  // Handle media switching
   useEffect(() => {
     if (mediaFiles.length > 1) {
       const interval = setInterval(() => {
@@ -266,6 +337,7 @@ const ScreenSaver = ({ projectId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaFiles, currentIndex]);
 
+  // Handle fullscreen mode
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key === "Escape" && isFullScreen) {
@@ -295,73 +367,75 @@ const ScreenSaver = ({ projectId }) => {
   });
 
   const handleNext = () => {
-    setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
+    setTransitionIndex((prevIndex) => (prevIndex + 1) % transitionEffects.length);
     setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaFiles.length);
-    console.log(
-      "Next media:",
-      mediaFiles[(currentIndex + 1) % mediaFiles.length]
-    );
   };
 
   const handlePrevious = () => {
-    setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
+    setTransitionIndex((prevIndex) => (prevIndex - 1 + transitionEffects.length) % transitionEffects.length);
     setCurrentIndex(
       (prevIndex) => (prevIndex - 1 + mediaFiles.length) % mediaFiles.length
-    );
-    console.log(
-      "Previous media:",
-      mediaFiles[(currentIndex - 1 + mediaFiles.length) % mediaFiles.length]
     );
   };
 
   return (
-    <div ref={screenSaverRef} className="relative w-full h-full">
-      {transitions((style, item) => (
-        <animated.div
-          style={{
-            ...style,
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#000", // Set a background color to avoid flashes
-          }}
-        >
-          {item &&
-          item.content_type &&
-          item.content_type.startsWith("video") ? (
-            <video
-              ref={(el) => (videoRefs.current[item.url] = el)}
-              src={item.url}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="object-cover w-full h-full"
-              loading="lazy" // Lazy loading for videos
-            />
-          ) : (
-            item && (
-              <img
+    <div ref={screenSaverRef} className="relative w-full h-full bg-black">
+      {isLoaded ? (
+        transitions((style, item) => (
+          <animated.div
+            style={{
+              ...style,
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {item &&
+            item.content_type &&
+            item.content_type.startsWith("video") ? (
+              <video
+                ref={(el) => (videoRefs.current[item.url] = el)}
                 src={item.url}
-                alt="Screensaver"
+                autoPlay
+                muted
+                loop
+                playsInline
                 className="object-cover w-full h-full"
-                loading="lazy" // Enable lazy loading
+                loading="lazy"
               />
-            )
-          )}
-        </animated.div>
-      ))}
+            ) : (
+              item && (
+                <img
+                  src={item.url}
+                  alt="Screensaver"
+                  className="object-cover w-full h-full"
+                  loading="lazy"
+                />
+              )
+            )}
+          </animated.div>
+        ))
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center text-white">
+          Loading...
+        </div>
+      )}
       <button
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
+        aria-label="Previous"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white"
         onClick={handlePrevious}
       >
-        <FontAwesomeIcon icon={faArrowLeft} size="lg" />
+        <FontAwesomeIcon icon={faArrowLeft} />
       </button>
       <button
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
+        aria-label="Next"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white"
         onClick={handleNext}
       >
-        <FontAwesomeIcon icon={faArrowRight} size="lg" />
+        <FontAwesomeIcon icon={faArrowRight} />
       </button>
     </div>
   );
