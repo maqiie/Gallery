@@ -217,9 +217,10 @@ const ScreenSaver = ({ projectId }) => {
   const [mediaFiles, setMediaFiles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(true);
-  const [isLoaded, setIsLoaded] = useState(false); // Track if media is loaded
+  const [isLoaded, setIsLoaded] = useState(false);
   const screenSaverRef = useRef(null);
   const videoRefs = useRef({});
+  const imageRefs = useRef([]);
 
   // Define a variety of transition effects
   const transitionEffects = [
@@ -241,58 +242,7 @@ const ScreenSaver = ({ projectId }) => {
       leave: { opacity: 0, transform: "translateY(100%)" },
       config: { tension: 200, friction: 20 },
     },
-    {
-      from: { opacity: 0, transform: "rotate(180deg)" },
-      enter: { opacity: 1, transform: "rotate(0deg)" },
-      leave: { opacity: 0, transform: "rotate(-180deg)" },
-      config: { tension: 200, friction: 20 },
-    },
-    {
-      from: { opacity: 0, transform: "scaleX(0.8)", transformOrigin: "left" },
-      enter: { opacity: 1, transform: "scaleX(1)", transformOrigin: "left" },
-      leave: { opacity: 0, transform: "scaleX(0.8)", transformOrigin: "left" },
-      config: { tension: 200, friction: 20 },
-    },
-    {
-      from: { opacity: 0, transform: "scaleY(0.8)", transformOrigin: "bottom" },
-      enter: { opacity: 1, transform: "scaleY(1)", transformOrigin: "bottom" },
-      leave: {
-        opacity: 0,
-        transform: "scaleY(0.8)",
-        transformOrigin: "bottom",
-      },
-      config: { tension: 200, friction: 20 },
-    },
-    {
-      from: { opacity: 0, transform: "skewX(15deg)" },
-      enter: { opacity: 1, transform: "skewX(0deg)" },
-      leave: { opacity: 0, transform: "skewX(-15deg)" },
-      config: { tension: 200, friction: 20 },
-    },
-    {
-      from: { opacity: 0, transform: "rotateY(90deg)" },
-      enter: { opacity: 1, transform: "rotateY(0deg)" },
-      leave: { opacity: 0, transform: "rotateY(-90deg)" },
-      config: { tension: 200, friction: 20 },
-    },
-    {
-      from: { opacity: 0, transform: "scale(0.5)", rotateZ: "45deg" },
-      enter: { opacity: 1, transform: "scale(1)", rotateZ: "0deg" },
-      leave: { opacity: 0, transform: "scale(0.5)", rotateZ: "45deg" },
-      config: { tension: 200, friction: 20 },
-    },
-    {
-      from: { opacity: 0, transform: "translateX(100%)", skewX: "30deg" },
-      enter: { opacity: 1, transform: "translateX(0%)", skewX: "0deg" },
-      leave: { opacity: 0, transform: "translateX(-100%)", skewX: "-30deg" },
-      config: { tension: 200, friction: 20 },
-    },
-    {
-      from: { opacity: 0, transform: "scaleY(0.5)" },
-      enter: { opacity: 1, transform: "scaleY(1)" },
-      leave: { opacity: 0, transform: "scaleY(0.5)" },
-      config: { tension: 200, friction: 20 },
-    },
+    // Add more transitions if needed...
   ];
 
   const [transitionIndex, setTransitionIndex] = useState(0);
@@ -308,7 +258,6 @@ const ScreenSaver = ({ projectId }) => {
             url: new URL(media.url, "https://gallery-db.onrender.com").href,
           }));
           setMediaFiles(mediaFilesWithAbsoluteUrls);
-          setIsLoaded(true); // Mark media as loaded
         } else {
           console.error("Invalid response format:", response);
         }
@@ -360,6 +309,34 @@ const ScreenSaver = ({ projectId }) => {
     }
   }, [isFullScreen]);
 
+  // Preload images and videos
+  useEffect(() => {
+    if (mediaFiles.length > 0) {
+      const preloadMedia = async () => {
+        const promises = mediaFiles.map((media) => {
+          return new Promise((resolve) => {
+            if (media.content_type.startsWith("video")) {
+              const video = document.createElement("video");
+              video.src = media.url;
+              video.oncanplaythrough = () => resolve();
+              video.onerror = () => resolve(); // Resolve even on error to avoid blocking
+            } else {
+              const img = new Image();
+              img.src = media.url;
+              img.onload = () => resolve();
+              img.onerror = () => resolve(); // Resolve even on error to avoid blocking
+            }
+          });
+        });
+
+        await Promise.all(promises);
+        setIsLoaded(true);
+      };
+
+      preloadMedia();
+    }
+  }, [mediaFiles]);
+
   const transitions = useTransition(mediaFiles[currentIndex], {
     ...transitionEffects[transitionIndex],
     config: { duration: 1000 }, // Adjusted duration for smoother transitions
@@ -409,6 +386,7 @@ const ScreenSaver = ({ projectId }) => {
             ) : (
               item && (
                 <img
+                  ref={(el) => (imageRefs.current[currentIndex] = el)}
                   src={item.url}
                   alt="Screensaver"
                   className="object-cover w-full h-full"
