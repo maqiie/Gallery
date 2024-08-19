@@ -753,7 +753,7 @@ const ScreenSaver = ({ projectId }) => {
         if (response.media_files) {
           const mediaFilesWithAbsoluteUrls = response.media_files.map((media) => ({
             ...media,
-            url: new URL(media.url, 'http://localhost:3001').href,
+            url: new URL(media.url, 'https://gallery-db.onrender.com').href,
           }));
           setMediaFiles(mediaFilesWithAbsoluteUrls);
           console.log('Loaded media files:', mediaFilesWithAbsoluteUrls);
