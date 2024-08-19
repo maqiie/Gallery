@@ -7,7 +7,7 @@
 // export const fetchMedia = (projectId) => axios.get(`${API_URL}/projects/${projectId}/media`);
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001'; // Replace with your Rails backend URL
+const API_URL = 'https://gallery-db.onrender.com'; // Replace with your Rails backend URL
 
 // Fetch project details
 export const fetchProjectById = async (projectId) => {
