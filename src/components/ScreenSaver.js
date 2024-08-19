@@ -207,6 +207,8 @@
 // };
 
 // export default ScreenSaver;import { useTransition, animated } from "@react-spring/web";
+
+
 import { fetchMedia } from "../services/api";
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -370,30 +372,29 @@ const ScreenSaver = ({ projectId }) => {
               justifyContent: 'center',
             }}
           >
-            {item &&
-            item.content_type &&
-            item.content_type.startsWith("video") ? (
-              <video
-                ref={(el) => (videoRefs.current[item.url] = el)}
-                src={item.url}
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="object-cover w-full h-full"
-                loading="lazy"
-              />
-            ) : (
-              item && (
-                <img
-                  ref={(el) => (imageRefs.current[currentIndex] = el)}
-                  src={item.url}
-                  alt="Screensaver"
-                  className="object-cover w-full h-full"
-                  loading="lazy"
-                />
-              )
-            )}
+           {item && item.content_type && item.content_type.startsWith("video") ? (
+   <video
+       ref={(el) => (videoRefs.current[item.url] = el)}
+       src={item.url}
+       autoPlay
+       muted
+       loop
+       playsInline
+       className="object-cover w-full h-full"
+       loading="lazy"
+   />
+ ) : (
+   item && item.content_type && (
+     <img
+       ref={(el) => (imageRefs.current[currentIndex] = el)}
+       src={item.url}
+       alt="Screensaver"
+       className="object-cover w-full h-full"
+       loading="lazy"
+     />
+   )
+ )}
+
           </animated.div>
         ))
       ) : (
