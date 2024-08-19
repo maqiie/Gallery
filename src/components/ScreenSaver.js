@@ -493,10 +493,198 @@
 //   );
 // };
 
-// export default ScreenSaver;
+// // export default ScreenSaver;
+// import { useTransition, animated } from '@react-spring/web';
+// import { fetchMedia } from '../services/api';
+// import { useState, useEffect, useRef } from 'react';
+
+// const ScreenSaver = ({ projectId }) => {
+//   const [mediaFiles, setMediaFiles] = useState([]);
+//   const [currentIndex, setCurrentIndex] = useState(0);
+//   const [isFullScreen, setIsFullScreen] = useState(true);
+//   const screenSaverRef = useRef(null);
+//   const videoRefs = useRef({});
+
+//   const transitionEffects = [
+//     {
+//       from: { opacity: 0, transform: 'scale(1.2)' },
+//       enter: { opacity: 1, transform: 'scale(1)' },
+//       leave: { opacity: 0, transform: 'scale(0.8)' },
+//       config: { tension: 200, friction: 20 },
+//     },
+//     {
+//       from: { opacity: 0, transform: 'translateX(100%)' },
+//       enter: { opacity: 1, transform: 'translateX(0%)' },
+//       leave: { opacity: 0, transform: 'translateX(-100%)' },
+//       config: { tension: 200, friction: 20 },
+//     },
+//     {
+//       from: { opacity: 0, transform: 'translateY(-100%)' },
+//       enter: { opacity: 1, transform: 'translateY(0%)' },
+//       leave: { opacity: 0, transform: 'translateY(100%)' },
+//       config: { tension: 200, friction: 20 },
+//     },
+//     {
+//       from: { opacity: 0, transform: 'rotate(180deg)' },
+//       enter: { opacity: 1, transform: 'rotate(0deg)' },
+//       leave: { opacity: 0, transform: 'rotate(-180deg)' },
+//       config: { tension: 200, friction: 20 },
+//     },
+//     {
+//       from: { opacity: 0, transform: 'scaleX(0.8)', transformOrigin: 'left' },
+//       enter: { opacity: 1, transform: 'scaleX(1)', transformOrigin: 'left' },
+//       leave: { opacity: 0, transform: 'scaleX(0.8)', transformOrigin: 'left' },
+//       config: { tension: 200, friction: 20 },
+//     },
+//     {
+//       from: { opacity: 0, transform: 'scaleY(0.8)', transformOrigin: 'bottom' },
+//       enter: { opacity: 1, transform: 'scaleY(1)', transformOrigin: 'bottom' },
+//       leave: { opacity: 0, transform: 'scaleY(0.8)', transformOrigin: 'bottom' },
+//       config: { tension: 200, friction: 20 },
+//     },
+//     {
+//       from: { opacity: 0, transform: 'skewX(15deg)' },
+//       enter: { opacity: 1, transform: 'skewX(0deg)' },
+//       leave: { opacity: 0, transform: 'skewX(-15deg)' },
+//       config: { tension: 200, friction: 20 },
+//     },
+//     {
+//       from: { opacity: 0, transform: 'rotateY(90deg)' },
+//       enter: { opacity: 1, transform: 'rotateY(0deg)' },
+//       leave: { opacity: 0, transform: 'rotateY(-90deg)' },
+//       config: { tension: 200, friction: 20 },
+//     },
+//   ];
+
+//   const [transitionIndex, setTransitionIndex] = useState(0);
+
+//   useEffect(() => {
+//     const loadMedia = async () => {
+//       try {
+//         const response = await fetchMedia(projectId);
+//         if (response.media_files) {
+//           const mediaFilesWithAbsoluteUrls = response.media_files.map((media) => ({
+//             ...media,
+//             url: new URL(media.url, 'http://localhost:3001').href,
+//           }));
+//           setMediaFiles(mediaFilesWithAbsoluteUrls);
+//         } else {
+//           console.error('Invalid response format:', response);
+//         }
+//       } catch (error) {
+//         console.error('Error fetching media:', error.message);
+//       }
+//     };
+
+//     loadMedia();
+//   }, [projectId]);
+
+//   useEffect(() => {
+//     if (mediaFiles.length > 1) {
+//       const interval = setInterval(() => {
+//         const currentVideo = videoRefs.current[mediaFiles[currentIndex]?.url];
+//         if (currentVideo && !currentVideo.paused) {
+//           currentVideo.play();
+//         } else {
+//           handleNext();
+//         }
+//       }, 30000); // Change images/videos every 30 seconds
+
+//       return () => clearInterval(interval);
+//     }
+//   }, [mediaFiles, currentIndex]);
+
+//   useEffect(() => {
+//     const handleKeyPress = (event) => {
+//       if (event.key === 'Escape') {
+//         setIsFullScreen(false);
+//         document.exitFullscreen();
+//       }
+//     };
+
+//     window.addEventListener('keydown', handleKeyPress);
+//     return () => window.removeEventListener('keydown', handleKeyPress);
+//   }, []);
+
+//   useEffect(() => {
+//     if (isFullScreen && screenSaverRef.current) {
+//       screenSaverRef.current.requestFullscreen();
+//     }
+//   }, [isFullScreen]);
+
+//   useEffect(() => {
+//     if (!isFullScreen) {
+//       setIsFullScreen(true);
+//     }
+//   }, []);
+
+//   const transitions = useTransition(mediaFiles[currentIndex], {
+//     ...transitionEffects[transitionIndex],
+//     config: { duration: 1000 }, // Adjusted duration for smoother transitions
+//     keys: mediaFiles[currentIndex]?.url,
+//   });
+
+//   const handleNext = () => {
+//     setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
+//     setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaFiles.length);
+//   };
+
+//   const handlePrevious = () => {
+//     setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
+//     setCurrentIndex((prevIndex) =>
+//       prevIndex === 0 ? mediaFiles.length - 1 : prevIndex - 1
+//     );
+//   };
+
+//   return (
+//     <div ref={screenSaverRef} className="relative w-full h-full">
+//       {transitions((style, item) => (
+//         <animated.div style={{ ...style, position: 'absolute', width: '100%', height: '100%' }}>
+//          {item && item.content_type && item.content_type.startsWith('video') ? (
+//   <video
+//     ref={(el) => (videoRefs.current[item.url] = el)}
+//     src={item.url}
+//     autoPlay
+//     muted
+//     loop
+//     playsInline
+//     className="object-cover w-full h-full"
+//   />
+// ) : (
+//   item && (
+//     <img
+//       src={item.url}
+//       alt="Screensaver"
+//       className="object-cover w-full h-full"
+//     />
+//   )
+// )}
+
+//         </animated.div>
+//       ))}
+//       <button
+//         className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
+//         onClick={handlePrevious}
+//       >
+//         Previous
+//       </button>
+//       <button
+//         className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
+//         onClick={handleNext}
+//       >
+//         Next
+//       </button>
+//     </div>
+//   );
+// };
+
+
+// export default ScreenSaver;import { useTransition, animated } from '@react-spring/web';
 import { useTransition, animated } from '@react-spring/web';
 import { fetchMedia } from '../services/api';
 import { useState, useEffect, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const ScreenSaver = ({ projectId }) => {
   const [mediaFiles, setMediaFiles] = useState([]);
@@ -568,6 +756,7 @@ const ScreenSaver = ({ projectId }) => {
             url: new URL(media.url, 'http://localhost:3001').href,
           }));
           setMediaFiles(mediaFilesWithAbsoluteUrls);
+          console.log('Loaded media files:', mediaFilesWithAbsoluteUrls);
         } else {
           console.error('Invalid response format:', response);
         }
@@ -592,31 +781,32 @@ const ScreenSaver = ({ projectId }) => {
 
       return () => clearInterval(interval);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaFiles, currentIndex]);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && isFullScreen) {
         setIsFullScreen(false);
-        document.exitFullscreen();
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
-
-  useEffect(() => {
-    if (isFullScreen && screenSaverRef.current) {
-      screenSaverRef.current.requestFullscreen();
-    }
   }, [isFullScreen]);
 
   useEffect(() => {
-    if (!isFullScreen) {
-      setIsFullScreen(true);
+    if (isFullScreen && screenSaverRef.current) {
+      screenSaverRef.current.requestFullscreen()
+        .catch(err => {
+          console.error("Failed to enter full-screen mode:", err);
+        });
     }
-  }, []);
+  }, [isFullScreen]);
+  
 
   const transitions = useTransition(mediaFiles[currentIndex], {
     ...transitionEffects[transitionIndex],
@@ -627,56 +817,56 @@ const ScreenSaver = ({ projectId }) => {
   const handleNext = () => {
     setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
     setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaFiles.length);
+    console.log('Next media:', mediaFiles[(currentIndex + 1) % mediaFiles.length]);
   };
 
   const handlePrevious = () => {
     setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? mediaFiles.length - 1 : prevIndex - 1
+      (prevIndex - 1 + mediaFiles.length) % mediaFiles.length
     );
+    console.log('Previous media:', mediaFiles[(currentIndex - 1 + mediaFiles.length) % mediaFiles.length]);
   };
 
   return (
     <div ref={screenSaverRef} className="relative w-full h-full">
       {transitions((style, item) => (
         <animated.div style={{ ...style, position: 'absolute', width: '100%', height: '100%' }}>
-         {item && item.content_type && item.content_type.startsWith('video') ? (
-  <video
-    ref={(el) => (videoRefs.current[item.url] = el)}
-    src={item.url}
-    autoPlay
-    muted
-    loop
-    playsInline
-    className="object-cover w-full h-full"
-  />
-) : (
-  item && (
-    <img
-      src={item.url}
-      alt="Screensaver"
-      className="object-cover w-full h-full"
-    />
-  )
-)}
-
+          {item && item.content_type && item.content_type.startsWith('video') ? (
+            <video
+              ref={(el) => (videoRefs.current[item.url] = el)}
+              src={item.url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            item && (
+              <img
+                src={item.url}
+                alt="Screensaver"
+                className="object-cover w-full h-full"
+              />
+            )
+          )}
         </animated.div>
       ))}
       <button
         className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
         onClick={handlePrevious}
       >
-        Previous
+        <FontAwesomeIcon icon={faArrowLeft} size="lg" />
       </button>
       <button
         className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
         onClick={handleNext}
       >
-        Next
+        <FontAwesomeIcon icon={faArrowRight} size="lg" />
       </button>
     </div>
   );
 };
-
 
 export default ScreenSaver;
