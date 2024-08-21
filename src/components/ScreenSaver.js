@@ -1,68 +1,44 @@
-// import { useTransition, animated } from "@react-spring/web";
 // import { fetchMedia } from "../services/api";
 // import { useState, useEffect, useRef } from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+// import { useTransition, animated } from "@react-spring/web";
 
 // const ScreenSaver = ({ projectId }) => {
 //   const [mediaFiles, setMediaFiles] = useState([]);
 //   const [currentIndex, setCurrentIndex] = useState(0);
 //   const [isFullScreen, setIsFullScreen] = useState(true);
+//   const [loading, setLoading] = useState(true);
 //   const screenSaverRef = useRef(null);
 //   const videoRefs = useRef({});
+//   const preloadRef = useRef({});
 
+//   // Transition effects with smooth modern animations
 //   const transitionEffects = [
 //     {
-//       from: { opacity: 0, transform: "scale(1.2)" },
-//       enter: { opacity: 1, transform: "scale(1)" },
-//       leave: { opacity: 0, transform: "scale(0.8)" },
-//       config: { tension: 200, friction: 20 },
+//       from: { opacity: 0 },
+//       enter: { opacity: 1 },
+//       leave: { opacity: 0 },
 //     },
 //     {
-//       from: { opacity: 0, transform: "translateX(100%)" },
-//       enter: { opacity: 1, transform: "translateX(0%)" },
-//       leave: { opacity: 0, transform: "translateX(-100%)" },
-//       config: { tension: 200, friction: 20 },
-//     },
-//     {
-//       from: { opacity: 0, transform: "translateY(-100%)" },
+//       from: { opacity: 0, transform: "translateY(100%)" },
 //       enter: { opacity: 1, transform: "translateY(0%)" },
-//       leave: { opacity: 0, transform: "translateY(100%)" },
-//       config: { tension: 200, friction: 20 },
+//       leave: { opacity: 0, transform: "translateY(-100%)" },
 //     },
 //     {
-//       from: { opacity: 0, transform: "rotate(180deg)" },
-//       enter: { opacity: 1, transform: "rotate(0deg)" },
-//       leave: { opacity: 0, transform: "rotate(-180deg)" },
-//       config: { tension: 200, friction: 20 },
+//       from: { opacity: 0, transform: "scale(0.8)" },
+//       enter: { opacity: 1, transform: "scale(1)" },
+//       leave: { opacity: 0, transform: "scale(1.2)" },
 //     },
 //     {
-//       from: { opacity: 0, transform: "scaleX(0.8)", transformOrigin: "left" },
-//       enter: { opacity: 1, transform: "scaleX(1)", transformOrigin: "left" },
-//       leave: { opacity: 0, transform: "scaleX(0.8)", transformOrigin: "left" },
-//       config: { tension: 200, friction: 20 },
-//     },
-//     {
-//       from: { opacity: 0, transform: "scaleY(0.8)", transformOrigin: "bottom" },
-//       enter: { opacity: 1, transform: "scaleY(1)", transformOrigin: "bottom" },
-//       leave: {
-//         opacity: 0,
-//         transform: "scaleY(0.8)",
-//         transformOrigin: "bottom",
-//       },
-//       config: { tension: 200, friction: 20 },
-//     },
-//     {
-//       from: { opacity: 0, transform: "skewX(15deg)" },
-//       enter: { opacity: 1, transform: "skewX(0deg)" },
-//       leave: { opacity: 0, transform: "skewX(-15deg)" },
-//       config: { tension: 200, friction: 20 },
+//       from: { opacity: 0, transform: "rotateX(90deg)" },
+//       enter: { opacity: 1, transform: "rotateX(0deg)" },
+//       leave: { opacity: 0, transform: "rotateX(-90deg)" },
 //     },
 //     {
 //       from: { opacity: 0, transform: "rotateY(90deg)" },
 //       enter: { opacity: 1, transform: "rotateY(0deg)" },
 //       leave: { opacity: 0, transform: "rotateY(-90deg)" },
-//       config: { tension: 200, friction: 20 },
 //     },
 //   ];
 
@@ -76,7 +52,7 @@
 //           const mediaFilesWithAbsoluteUrls = response.media_files.map(
 //             (media) => ({
 //               ...media,
-//               url: new URL(media.url, "http://localhost:3001").href,
+//               url: new URL(media.url, "https://gallery-db.onrender.com").href,
 //             })
 //           );
 //           setMediaFiles(mediaFilesWithAbsoluteUrls);
@@ -130,34 +106,63 @@
 //     }
 //   }, [isFullScreen]);
 
-//   const transitions = useTransition(mediaFiles[currentIndex], {
-//     ...transitionEffects[transitionIndex],
-//     config: { duration: 1000 }, // Adjusted duration for smoother transitions
-//     keys: mediaFiles[currentIndex]?.url,
-//   });
+//   // Preload and lazy load media
+//   const preloadNextMedia = (nextIndex) => {
+//     const nextMedia = mediaFiles[nextIndex];
+//     if (nextMedia) {
+//       const mediaType = nextMedia.content_type || "";
+//       const mediaElement = mediaType.startsWith("video")
+//         ? document.createElement("video")
+//         : document.createElement("img");
+
+//       mediaElement.src = nextMedia.url;
+//       mediaElement.onload = () => {
+//         preloadRef.current[nextMedia.url] = mediaElement;
+//         if (nextIndex === (currentIndex + 1) % mediaFiles.length) {
+//           setLoading(false);
+//         }
+//       };
+//       mediaElement.onerror = () => {
+//         console.error("Failed to preload media:", nextMedia.url);
+//         setLoading(false);
+//       };
+//     } else {
+//       console.error("Invalid media at index:", nextIndex, nextMedia);
+//     }
+//   };
 
 //   const handleNext = () => {
 //     setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
-//     setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaFiles.length);
-//     console.log(
-//       "Next media:",
-//       mediaFiles[(currentIndex + 1) % mediaFiles.length]
-//     );
+//     const nextIndex = (currentIndex + 1) % mediaFiles.length;
+//     preloadNextMedia((nextIndex + 1) % mediaFiles.length);
+//     setCurrentIndex(nextIndex);
+//     setLoading(true);
+//     console.log("Next media:", mediaFiles[nextIndex]);
 //   };
 
 //   const handlePrevious = () => {
 //     setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
-//     setCurrentIndex(
-//       (prevIndex) => (prevIndex - 1 + mediaFiles.length) % mediaFiles.length
-//     );
-//     console.log(
-//       "Previous media:",
-//       mediaFiles[(currentIndex - 1 + mediaFiles.length) % mediaFiles.length]
-//     );
+//     const prevIndex =
+//       (currentIndex - 1 + mediaFiles.length) % mediaFiles.length;
+//     preloadNextMedia((prevIndex - 1 + mediaFiles.length) % mediaFiles.length);
+//     setCurrentIndex(prevIndex);
+//     setLoading(true);
+//     console.log("Previous media:", mediaFiles[prevIndex]);
 //   };
 
+//   const currentMedia = mediaFiles[currentIndex];
+
+//   const transitions = useTransition(currentMedia, {
+//     ...transitionEffects[transitionIndex],
+//     config: { tension: 300, friction: 30 }, // Enhanced spring configuration
+//     keys: currentMedia?.url,
+//   });
+
 //   return (
-//     <div ref={screenSaverRef} className="relative w-full h-full">
+//     <div
+//       ref={screenSaverRef}
+//       className="relative w-full h-full overflow-hidden"
+//     >
 //       {transitions((style, item) => (
 //         <animated.div
 //           style={{
@@ -165,8 +170,22 @@
 //             position: "absolute",
 //             width: "100%",
 //             height: "100%",
+//             backgroundSize: "cover",
+//             backgroundPosition: "center",
+//             willChange: "transform, opacity", // Optimize for animations
+//             backgroundColor: loading ? "rgba(0, 0, 0, 0.5)" : "transparent", // Fade background while loading
 //           }}
 //         >
+//           {loading && (
+//             <div className="absolute inset-0 flex items-center justify-center">
+//               <div className="newtons-cradle">
+//                 <div className="newtons-cradle__dot"></div>
+//                 <div className="newtons-cradle__dot"></div>
+//                 <div className="newtons-cradle__dot"></div>
+//                 <div className="newtons-cradle__dot"></div>
+//               </div>
+//             </div>
+//           )}
 //           {item &&
 //           item.content_type &&
 //           item.content_type.startsWith("video") ? (
@@ -177,14 +196,22 @@
 //               muted
 //               loop
 //               playsInline
-//               className="object-cover w-full h-full"
+//               className={`object-cover w-full h-full ${
+//                 loading ? "hidden" : ""
+//               }`}
+//               onLoadedData={() => setLoading(false)}
+//               onError={() => setLoading(false)}
 //             />
 //           ) : (
 //             item && (
 //               <img
 //                 src={item.url}
 //                 alt="Screensaver"
-//                 className="object-cover w-full h-full"
+//                 className={`object-cover w-full h-full ${
+//                   loading ? "hidden" : ""
+//                 }`}
+//                 onLoad={() => setLoading(false)}
+//                 onError={() => setLoading(false)}
 //               />
 //             )
 //           )}
@@ -202,17 +229,89 @@
 //       >
 //         <FontAwesomeIcon icon={faArrowRight} size="lg" />
 //       </button>
+//       <style jsx>{`
+//         .newtons-cradle {
+//           --uib-size: 50px;
+//           --uib-speed: 1.2s;
+//           --uib-color: #474554;
+//           position: relative;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           width: var(--uib-size);
+//           height: var(--uib-size);
+//         }
+
+//         .newtons-cradle__dot {
+//           position: relative;
+//           display: flex;
+//           align-items: center;
+//           height: 100%;
+//           width: 25%;
+//           transform-origin: center top;
+//         }
+
+//         .newtons-cradle__dot::after {
+//           content: "";
+//           display: block;
+//           width: 100%;
+//           height: 25%;
+//           border-radius: 50%;
+//           background-color: var(--uib-color);
+//         }
+
+//         .newtons-cradle__dot:first-child {
+//           animation: swing var(--uib-speed) linear infinite;
+//         }
+
+//         .newtons-cradle__dot:last-child {
+//           animation: swing2 var(--uib-speed) linear infinite;
+//         }
+
+//         @keyframes swing {
+//           0% {
+//             transform: rotate(0deg);
+//             animation-timing-function: ease-out;
+//           }
+
+//           25% {
+//             transform: rotate(70deg);
+//             animation-timing-function: ease-in;
+//           }
+
+//           50% {
+//             transform: rotate(0deg);
+//             animation-timing-function: linear;
+//           }
+//         }
+
+//         @keyframes swing2 {
+//           0% {
+//             transform: rotate(0deg);
+//             animation-timing-function: linear;
+//           }
+
+//           50% {
+//             transform: rotate(0deg);
+//             animation-timing-function: ease-out;
+//           }
+
+//           75% {
+//             transform: rotate(-70deg);
+//             animation-timing-function: ease-in;
+//           }
+//         }
+//       `}</style>
 //     </div>
 //   );
 // };
 
-// export default ScreenSaver;import { useTransition, animated } from "@react-spring/web";
+// export default ScreenSaver;
 import { fetchMedia } from "../services/api";
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useTransition, animated } from "@react-spring/web";
-
 
 const ScreenSaver = ({ projectId }) => {
   const [mediaFiles, setMediaFiles] = useState([]);
@@ -385,11 +484,20 @@ const ScreenSaver = ({ projectId }) => {
         >
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="newtons-cradle">
-                <div className="newtons-cradle__dot"></div>
-                <div className="newtons-cradle__dot"></div>
-                <div className="newtons-cradle__dot"></div>
-                <div className="newtons-cradle__dot"></div>
+              <div className="loader">
+                <svg viewBox="0 0 80 80">
+                  <rect x="8" y="8" width="64" height="64"></rect>
+                  <text
+                    x="50%"
+                    y="60%"
+                    textAnchor="middle"
+                    fill="white"
+                    fontSize="24"
+                    fontWeight="bold"
+                  >
+                    {['U', 'J', 'E', 'N', 'Z', 'I'][currentIndex % 6]}
+                  </text>
+                </svg>
               </div>
             </div>
           )}
@@ -431,76 +539,162 @@ const ScreenSaver = ({ projectId }) => {
         <FontAwesomeIcon icon={faArrowRight} size="lg" />
       </button>
       <style jsx>{`
-        .newtons-cradle {
-          --uib-size: 50px;
-          --uib-speed: 1.2s;
-          --uib-color: #474554;
+        .loader {
+          --path: #5980eb;
+          --dot: #f50d05;
+          --duration: 3s;
+          width: 44px;
+          height: 44px;
           position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: var(--uib-size);
-          height: var(--uib-size);
         }
 
-        .newtons-cradle__dot {
-          position: relative;
-          display: flex;
-          align-items: center;
-          height: 100%;
-          width: 25%;
-          transform-origin: center top;
+        .loader:before {
+          content: "";
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          position: absolute;
+          display: block;
+          background: var(--dot);
+          top: 37px;
+          left: 19px;
+          transform: translate(-18px, -18px);
+          animation: dotRect var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86)
+            infinite;
         }
 
-        .newtons-cradle__dot::after {
-          content: '';
+        .loader svg {
           display: block;
           width: 100%;
-          height: 25%;
-          border-radius: 50%;
-          background-color: var(--uib-color);
+          height: 100%;
         }
 
-        .newtons-cradle__dot:first-child {
-          animation: swing var(--uib-speed) linear infinite;
+        .loader svg rect,
+        .loader svg polygon,
+        .loader svg circle {
+          fill: none;
+          stroke: var(--path);
+          stroke-width: 10px;
+          stroke-linejoin: round;
+          stroke-linecap: round;
         }
 
-        .newtons-cradle__dot:last-child {
-          animation: swing2 var(--uib-speed) linear infinite;
+        .loader svg polygon {
+          stroke-dasharray: 145 76 145 76;
+          stroke-dashoffset: 0;
+          animation: pathTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86)
+            infinite;
         }
 
-        @keyframes swing {
-          0% {
-            transform: rotate(0deg);
-            animation-timing-function: ease-out;
+        .loader svg rect {
+          stroke-dasharray: 192 64 192 64;
+          stroke-dashoffset: 0;
+          animation: pathRect 3s cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+        }
+
+        .loader svg circle {
+          stroke-dasharray: 150 50 150 50;
+          stroke-dashoffset: 75;
+          animation: pathCircle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86)
+            infinite;
+        }
+
+        .loader.triangle {
+          width: 48px;
+        }
+
+        .loader.triangle:before {
+          left: 21px;
+          transform: translate(-10px, -18px);
+          animation: dotTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86)
+            infinite;
+        }
+
+        @keyframes pathTriangle {
+          33% {
+            stroke-dashoffset: 74;
           }
 
+          66% {
+            stroke-dashoffset: 147;
+          }
+
+          100% {
+            stroke-dashoffset: 221;
+          }
+        }
+
+        @keyframes dotTriangle {
+          33% {
+            transform: translate(0, 0);
+          }
+
+          66% {
+            transform: translate(10px, -18px);
+          }
+
+          100% {
+            transform: translate(-10px, -18px);
+          }
+        }
+
+        @keyframes pathRect {
           25% {
-            transform: rotate(70deg);
-            animation-timing-function: ease-in;
+            stroke-dashoffset: 64;
           }
 
           50% {
-            transform: rotate(0deg);
-            animation-timing-function: linear;
-          }
-        }
-
-        @keyframes swing2 {
-          0% {
-            transform: rotate(0deg);
-            animation-timing-function: linear;
-          }
-
-          50% {
-            transform: rotate(0deg);
-            animation-timing-function: ease-out;
+            stroke-dashoffset: 128;
           }
 
           75% {
-            transform: rotate(-70deg);
-            animation-timing-function: ease-in;
+            stroke-dashoffset: 192;
           }
+
+          100% {
+            stroke-dashoffset: 256;
+          }
+        }
+
+        @keyframes dotRect {
+          25% {
+            transform: translate(0, 0);
+          }
+
+          50% {
+            transform: translate(18px, -18px);
+          }
+
+          75% {
+            transform: translate(0, -36px);
+          }
+
+          100% {
+            transform: translate(-18px, -18px);
+          }
+        }
+
+        @keyframes pathCircle {
+          25% {
+            stroke-dashoffset: 125;
+          }
+
+          50% {
+            stroke-dashoffset: 175;
+          }
+
+          75% {
+            stroke-dashoffset: 225;
+          }
+
+          100% {
+            stroke-dashoffset: 275;
+          }
+        }
+
+        .loader {
+          display: inline-block;
+          margin: 0 16px;
         }
       `}</style>
     </div>
