@@ -307,8 +307,6 @@
 // };
 
 // export default ScreenSaver;
-
-
 import { fetchMedia } from "../services/api";
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -489,21 +487,23 @@ const ScreenSaver = ({ projectId }) => {
         >
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="loader">
-                <svg viewBox="0 0 80 80">
-                  <rect x="8" y="8" width="64" height="64"></rect>
-                  <text
-                    x="50%"
-                    y="60%"
-                    textAnchor="middle"
-                    fill="white"
-                    fontSize="24"
-                    fontWeight="bold"
-                  >
-                    {['U', 'J', 'E', 'N', 'Z', 'I'][currentIndex % 6]}
-                  </text>
-                </svg>
-              </div>
+              {['U', 'J', 'E', 'N', 'Z', 'I'].map((letter, index) => (
+                <div key={index} className="loader">
+                  <svg viewBox="0 0 80 80">
+                    <rect x="8" y="8" width="64" height="64"></rect>
+                    <text
+                      x="50%"
+                      y="60%"
+                      textAnchor="middle"
+                      fill="white"
+                      fontSize="24"
+                      fontWeight="bold"
+                    >
+                      {letter}
+                    </text>
+                  </svg>
+                </div>
+              ))}
             </div>
           )}
           {item &&
@@ -551,56 +551,153 @@ const ScreenSaver = ({ projectId }) => {
       </button>
       <style jsx>{`
         .loader {
+          --path: #5980eb;
+          --dot: #f50d05;
+          --duration: 3s;
+          width: 44px;
+          height: 44px;
           position: relative;
-          width: 80px;
-          height: 80px;
+          display: inline-block;
+          margin: 0 16px;
         }
-        
+
+        .loader:before {
+          content: "";
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          position: absolute;
+          display: block;
+          background: var(--dot);
+          top: 37px;
+          left: 19px;
+          transform: translate(-18px, -18px);
+          animation: dotRect var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+        }
+
         .loader svg {
+          display: block;
           width: 100%;
           height: 100%;
-          animation: rotate 2s linear infinite;
         }
 
-        .loader rect {
+        .loader svg rect,
+        .loader svg polygon,
+        .loader svg circle {
           fill: none;
-          stroke: white;
-          stroke-width: 4;
-          stroke-dasharray: 180;
+          stroke: var(--path);
+          stroke-width: 10px;
+          stroke-linejoin: round;
+          stroke-linecap: round;
+        }
+
+        .loader svg polygon {
+          stroke-dasharray: 145 76 145 76;
           stroke-dashoffset: 0;
-          transform-origin: 50% 50%;
-          animation: dash 1.5s ease-in-out infinite;
+          animation: pathTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
         }
 
-        .loader text {
-          font-family: Arial, sans-serif;
-          font-size: 24px;
-          font-weight: bold;
-          color: white;
-          transform: translate(-50%, -50%);
-          text-align: center;
+        .loader svg rect {
+          stroke-dasharray: 192 64 192 64;
+          stroke-dashoffset: 0;
+          animation: pathRect 3s cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
         }
 
-        @keyframes rotate {
-          0% {
-            transform: rotate(0deg);
+        .loader svg circle {
+          stroke-dasharray: 150 50 150 50;
+          stroke-dashoffset: 75;
+          animation: pathCircle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+        }
+
+        .loader.triangle {
+          width: 48px;
+        }
+
+        .loader.triangle:before {
+          left: 21px;
+          transform: translate(-10px, -18px);
+          animation: dotTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
+        }
+
+        @keyframes pathTriangle {
+          33% {
+            stroke-dashoffset: 74;
           }
+
+          66% {
+            stroke-dashoffset: 147;
+          }
+
           100% {
-            transform: rotate(360deg);
+            stroke-dashoffset: 221;
           }
         }
 
-        @keyframes dash {
-          0% {
-            stroke-dashoffset: 180;
+        @keyframes dotTriangle {
+          33% {
+            transform: translate(0, 0);
           }
+
+          66% {
+            transform: translate(10px, -18px);
+          }
+
+          100% {
+            transform: translate(-10px, -18px);
+          }
+        }
+
+        @keyframes pathRect {
+          25% {
+            stroke-dashoffset: 64;
+          }
+
           50% {
-            stroke-dashoffset: 90;
-            transform: rotate(45deg);
+            stroke-dashoffset: 128;
           }
+
+          75% {
+            stroke-dashoffset: 192;
+          }
+
           100% {
-            stroke-dashoffset: 180;
-            transform: rotate(360deg);
+            stroke-dashoffset: 256;
+          }
+        }
+
+        @keyframes dotRect {
+          25% {
+            transform: translate(0, 0);
+          }
+
+          50% {
+            transform: translate(18px, -18px);
+          }
+
+          75% {
+            transform: translate(0, -36px);
+          }
+
+          100% {
+            transform: translate(-18px, -18px);
+          }
+        }
+
+        @keyframes pathCircle {
+          25% {
+            stroke-dashoffset: 125;
+          }
+
+          50% {
+            stroke-dashoffset: 175;
+          }
+
+          75% {
+            stroke-dashoffset: 225;
+          }
+
+          100% {
+            stroke-dashoffset: 275;
           }
         }
       `}</style>
