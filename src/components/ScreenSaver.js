@@ -307,7 +307,6 @@
 // };
 
 // export default ScreenSaver;
-
 import { fetchMedia } from "../services/api";
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -322,33 +321,12 @@ const ScreenSaver = ({ projectId }) => {
   const screenSaverRef = useRef(null);
   const videoRefs = useRef({});
 
-  // Transition effects with smooth modern animations
   const transitionEffects = [
-    {
-      from: { opacity: 0 },
-      enter: { opacity: 1 },
-      leave: { opacity: 0 },
-    },
-    {
-      from: { opacity: 0, transform: "translateY(100%)" },
-      enter: { opacity: 1, transform: "translateY(0%)" },
-      leave: { opacity: 0, transform: "translateY(-100%)" },
-    },
-    {
-      from: { opacity: 0, transform: "scale(0.8)" },
-      enter: { opacity: 1, transform: "scale(1)" },
-      leave: { opacity: 0, transform: "scale(1.2)" },
-    },
-    {
-      from: { opacity: 0, transform: "rotateX(90deg)" },
-      enter: { opacity: 1, transform: "rotateX(0deg)" },
-      leave: { opacity: 0, transform: "rotateX(-90deg)" },
-    },
-    {
-      from: { opacity: 0, transform: "rotateY(90deg)" },
-      enter: { opacity: 1, transform: "rotateY(0deg)" },
-      leave: { opacity: 0, transform: "rotateY(-90deg)" },
-    },
+    { from: { opacity: 0 }, enter: { opacity: 1 }, leave: { opacity: 0 } },
+    { from: { opacity: 0, transform: "translateY(100%)" }, enter: { opacity: 1, transform: "translateY(0%)" }, leave: { opacity: 0, transform: "translateY(-100%)" } },
+    { from: { opacity: 0, transform: "scale(0.8)" }, enter: { opacity: 1, transform: "scale(1)" }, leave: { opacity: 0, transform: "scale(1.2)" } },
+    { from: { opacity: 0, transform: "rotateX(90deg)" }, enter: { opacity: 1, transform: "rotateX(0deg)" }, leave: { opacity: 0, transform: "rotateX(-90deg)" } },
+    { from: { opacity: 0, transform: "rotateY(90deg)" }, enter: { opacity: 1, transform: "rotateY(0deg)" }, leave: { opacity: 0, transform: "rotateY(-90deg)" } }
   ];
 
   const [transitionIndex, setTransitionIndex] = useState(0);
@@ -361,11 +339,10 @@ const ScreenSaver = ({ projectId }) => {
           const mediaFilesWithAbsoluteUrls = response.media_files.map(
             (media) => ({
               ...media,
-              url: new URL(media.url, "https://gallery-db.onrender.com").href,
+              url: new URL(media.url, "https://gallery-db.onrender.com").href
             })
           );
           setMediaFiles(mediaFilesWithAbsoluteUrls);
-          console.log("Loaded media files:", mediaFilesWithAbsoluteUrls);
         } else {
           console.error("Invalid response format:", response);
         }
@@ -390,7 +367,6 @@ const ScreenSaver = ({ projectId }) => {
 
       return () => clearInterval(interval);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaFiles, currentIndex]);
 
   useEffect(() => {
@@ -444,24 +420,21 @@ const ScreenSaver = ({ projectId }) => {
     preloadNextMedia((nextIndex + 1) % mediaFiles.length);
     setCurrentIndex(nextIndex);
     setLoading(true);
-    console.log("Next media:", mediaFiles[nextIndex]);
   };
 
   const handlePrevious = () => {
     setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
-    const prevIndex =
-      (currentIndex - 1 + mediaFiles.length) % mediaFiles.length;
+    const prevIndex = (currentIndex - 1 + mediaFiles.length) % mediaFiles.length;
     preloadNextMedia((prevIndex - 1 + mediaFiles.length) % mediaFiles.length);
     setCurrentIndex(prevIndex);
     setLoading(true);
-    console.log("Previous media:", mediaFiles[prevIndex]);
   };
 
   const currentMedia = mediaFiles[currentIndex];
 
   const transitions = useTransition(currentMedia, {
     ...transitionEffects[transitionIndex],
-    config: { tension: 300, friction: 30 }, // Enhanced spring configuration
+    config: { tension: 300, friction: 30 },
     keys: currentMedia?.url,
   });
 
@@ -479,18 +452,38 @@ const ScreenSaver = ({ projectId }) => {
             height: "100%",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            willChange: "transform, opacity", // Optimize for animations
-            backgroundColor: loading ? "rgba(0, 0, 0, 0.5)" : "transparent", // Fade background while loading
+            willChange: "transform, opacity",
+            backgroundColor: loading ? "rgba(0, 0, 0, 0.5)" : "transparent",
           }}
         >
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="loader"></span>
-            </div>
+            <section className="loader">
+              <div>
+                <div>
+                  <span className="one h6"></span>
+                  <span className="two h3"></span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  <span className="one h1"></span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  <span className="two h2"></span>
+                </div>
+              </div>
+              <div>
+                <div>
+                  <span className="one h4"></span>
+                </div>
+              </div>
+            </section>
           )}
-          {item &&
-          item.content_type &&
-          item.content_type.startsWith("video") ? (
+          {item && item.content_type && item.content_type.startsWith("video") ? (
             <video
               ref={(el) => (videoRefs.current[item.url] = el)}
               src={item.url}
@@ -498,9 +491,7 @@ const ScreenSaver = ({ projectId }) => {
               muted
               loop
               playsInline
-              className={`object-cover w-full h-full ${
-                loading ? "hidden" : ""
-              }`}
+              className={`object-cover w-full h-full ${loading ? "hidden" : ""}`}
               onLoadedData={() => setLoading(false)}
               onError={() => setLoading(false)}
             />
@@ -509,9 +500,7 @@ const ScreenSaver = ({ projectId }) => {
               <img
                 src={item.url}
                 alt="Screensaver"
-                className={`object-cover w-full h-full ${
-                  loading ? "hidden" : ""
-                }`}
+                className={`object-cover w-full h-full ${loading ? "hidden" : ""}`}
                 onLoad={() => setLoading(false)}
                 onError={() => setLoading(false)}
               />
@@ -533,74 +522,212 @@ const ScreenSaver = ({ projectId }) => {
       </button>
       <style jsx>{`
         .loader {
-          position: relative;
-          width: 108px;
           display: flex;
-          justify-content: space-between;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          width: 90px;
+          height: 103px;
         }
 
-        .loader::after,
-        .loader::before {
-          content: "";
-          display: inline-block;
-          width: 48px;
-          height: 48px;
-          background-color: #fff;
-          background-image: radial-gradient(circle 14px, #0d161b 100%, transparent 0);
-          background-repeat: no-repeat;
-          border-radius: 50%;
-          animation: eyeMove 10s infinite, blink 10s infinite;
+        .loader div {
+          position: absolute;
+          width: 50px;
+          height: 31px;
         }
 
-        @keyframes eyeMove {
-          0%,
-          10% {
-            background-position: 0px 0px;
+        .rot {
+          transform: rotate(150deg);
+        }
+
+        .rot2 {
+          transform: rotate(20deg);
+        }
+
+        .loader div:nth-of-type(2) {
+          transform: rotate(60deg);
+        }
+
+        .loader div:nth-of-type(3) {
+          transform: rotate(-60deg);
+        }
+
+        .loader div div {
+          width: 100%;
+          height: 100%;
+          position: relative;
+        }
+
+        .loader div div span {
+          position: absolute;
+          width: 4px;
+          height: 0%;
+          background: #053146;
+          z-index: 999999;
+        }
+
+        .h1 {
+          left: 0;
+          animation: load1 3.2s ease infinite;
+        }
+
+        .h2 {
+          right: 0;
+          animation: load2 3.2s ease 0.4s infinite;
+        }
+
+        .h3 {
+          right: 0;
+          animation: load3 3.2s ease 0.8s infinite;
+        }
+
+        .h4 {
+          top: 10px;
+          left: 23px;
+          animation: load4 3.2s ease 1s infinite;
+          transform: rotate(90deg);
+        }
+
+        .h5 {
+          bottom: 0;
+          animation: load5 3.2s ease 1.2s infinite;
+        }
+
+        .h6 {
+          left: 0;
+          animation: load6 3.2s ease 1.3s infinite;
+        }
+
+        @keyframes load1 {
+          0% {
+            bottom: 0;
+            height: 0;
           }
-          13%,
-          40% {
-            background-position: -15px 0px;
+
+          6.944444444% {
+            bottom: 0;
+            height: 100%;
           }
-          43%,
-          70% {
-            background-position: 15px 0px;
+
+          50% {
+            top: 0;
+            height: 100%;
           }
-          73%,
-          90% {
-            background-position: 0px 15px;
-          }
-          93%,
-          100% {
-            background-position: 0px 0px;
+
+          59.944444433% {
+            top: 0;
+            height: 0;
           }
         }
 
-        @keyframes blink {
-          0%,
-          10%,
-          12%,
-          20%,
-          22%,
-          40%,
-          42%,
-          60%,
-          62%,
-          70%,
-          72%,
-          90%,
-          92%,
-          98%,
-          100% {
-            height: 48px;
+        @keyframes load2 {
+          0% {
+            top: 0;
+            height: 0;
           }
-          11%,
-          21%,
-          41%,
-          61%,
-          71%,
-          91%,
-          99% {
-            height: 18px;
+
+          6.944444444% {
+            top: 0;
+            height: 100%;
+          }
+
+          50% {
+            bottom: 0;
+            height: 100%;
+          }
+
+          59.944444433% {
+            bottom: 0;
+            height: 0;
+          }
+        }
+
+        @keyframes load3 {
+          0% {
+            top: 0;
+            height: 0;
+          }
+
+          6.944444444% {
+            top: 0;
+            height: 100%;
+          }
+
+          50% {
+            bottom: 0;
+            height: 100%;
+          }
+
+          59.94444443% {
+            bottom: 0;
+            height: 0;
+          }
+        }
+
+        @keyframes load4 {
+          0% {
+            top: 37px;
+            left: 23px;
+            height: 134%;
+          }
+
+          6.944444444% {
+            top: 10px;
+            height: 134%;
+          }
+
+          50% {
+            bottom: 10px;
+            height: 134%;
+          }
+
+          59.94444443% {
+            bottom: 0;
+            height: 0;
+          }
+        }
+
+        @keyframes load5 {
+          0% {
+            bottom: 0;
+            height: 0;
+          }
+
+          6.944444444% {
+            bottom: 0;
+            height: 100%;
+          }
+
+          50% {
+            top: 0;
+            height: 100%;
+          }
+
+          59.94444443% {
+            top: 0;
+            height: 0;
+          }
+        }
+
+        @keyframes load6 {
+          0% {
+            bottom: 0;
+            height: 0;
+          }
+
+          6.944444444% {
+            bottom: 0;
+            height: 100%;
+          }
+
+          50% {
+            top: 0;
+            height: 100%;
+          }
+
+          59.94444443% {
+            top: 0;
+            height: 0;
           }
         }
       `}</style>
