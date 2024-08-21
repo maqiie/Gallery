@@ -309,6 +309,7 @@
 // export default ScreenSaver;
 
 
+
 // import { fetchMedia } from "../services/api";
 // import { useState, useEffect, useRef } from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -704,6 +705,8 @@
 // };
 
 // export default ScreenSaver;
+
+
 import { fetchMedia } from "../services/api";
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -727,24 +730,24 @@ const ScreenSaver = ({ projectId }) => {
       leave: { opacity: 0 },
     },
     {
-      from: { opacity: 0, transform: 'translateY(100%)' },
-      enter: { opacity: 1, transform: 'translateY(0%)' },
-      leave: { opacity: 0, transform: 'translateY(-100%)' },
+      from: { opacity: 0, transform: "translateY(100%)" },
+      enter: { opacity: 1, transform: "translateY(0%)" },
+      leave: { opacity: 0, transform: "translateY(-100%)" },
     },
     {
-      from: { opacity: 0, transform: 'scale(0.8)' },
-      enter: { opacity: 1, transform: 'scale(1)' },
-      leave: { opacity: 0, transform: 'scale(1.2)' },
+      from: { opacity: 0, transform: "scale(0.8)" },
+      enter: { opacity: 1, transform: "scale(1)" },
+      leave: { opacity: 0, transform: "scale(1.2)" },
     },
     {
-      from: { opacity: 0, transform: 'rotateX(90deg)' },
-      enter: { opacity: 1, transform: 'rotateX(0deg)' },
-      leave: { opacity: 0, transform: 'rotateX(-90deg)' },
+      from: { opacity: 0, transform: "rotateX(90deg)" },
+      enter: { opacity: 1, transform: "rotateX(0deg)" },
+      leave: { opacity: 0, transform: "rotateX(-90deg)" },
     },
     {
-      from: { opacity: 0, transform: 'rotateY(90deg)' },
-      enter: { opacity: 1, transform: 'rotateY(0deg)' },
-      leave: { opacity: 0, transform: 'rotateY(-90deg)' },
+      from: { opacity: 0, transform: "rotateY(90deg)" },
+      enter: { opacity: 1, transform: "rotateY(0deg)" },
+      leave: { opacity: 0, transform: "rotateY(-90deg)" },
     },
   ];
 
@@ -817,10 +820,9 @@ const ScreenSaver = ({ projectId }) => {
     const nextMedia = mediaFiles[nextIndex];
     if (nextMedia) {
       const mediaType = nextMedia.content_type || "";
-      const mediaElement =
-        mediaType.startsWith("video")
-          ? document.createElement("video")
-          : document.createElement("img");
+      const mediaElement = mediaType.startsWith("video")
+        ? document.createElement("video")
+        : document.createElement("img");
 
       mediaElement.src = nextMedia.url;
       mediaElement.onload = () => {
@@ -849,7 +851,8 @@ const ScreenSaver = ({ projectId }) => {
 
   const handlePrevious = () => {
     setTransitionIndex(Math.floor(Math.random() * transitionEffects.length));
-    const prevIndex = (currentIndex - 1 + mediaFiles.length) % mediaFiles.length;
+    const prevIndex =
+      (currentIndex - 1 + mediaFiles.length) % mediaFiles.length;
     preloadNextMedia((prevIndex - 1 + mediaFiles.length) % mediaFiles.length);
     setCurrentIndex(prevIndex);
     setLoading(true);
@@ -865,7 +868,10 @@ const ScreenSaver = ({ projectId }) => {
   });
 
   return (
-    <div ref={screenSaverRef} className="relative w-full h-full overflow-hidden">
+    <div
+      ref={screenSaverRef}
+      className="relative w-full h-full overflow-hidden"
+    >
       {transitions((style, item) => (
         <animated.div
           style={{
@@ -873,90 +879,126 @@ const ScreenSaver = ({ projectId }) => {
             position: "absolute",
             width: "100%",
             height: "100%",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            willChange: 'transform, opacity', // Optimize for animations
-            backgroundColor: loading ? 'rgba(0, 0, 0, 0.5)' : 'transparent', // Fade background while loading
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            willChange: "transform, opacity", // Optimize for animations
+            backgroundColor: loading ? "rgba(0, 0, 0, 0.5)" : "transparent", // Fade background while loading
           }}
         >
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="loader">
-                <svg viewBox="0 0 80 80" width="100" height="100">
+                <svg viewBox="0 0 80 80">
+                  <rect x="8" y="8" width="64" height="64"></rect>
                   <text
                     x="50%"
-                    y="50%"
-                    textAnchor="middle"
-                    alignmentBaseline="central"
+                    y="60%"
+                    text-anchor="middle"
                     fill="white"
-                    fontSize="24"
-                    fontWeight="bold"
-                    letterSpacing="1"
+                    font-size="24"
+                    font-weight="bold"
                   >
-                    U J E N Z I
+                    U
+                  </text>
+                </svg>
+              </div>
+              <div className="loader">
+                <svg viewBox="0 0 80 80">
+                  <rect x="8" y="8" width="64" height="64"></rect>
+                  <text
+                    x="50%"
+                    y="60%"
+                    text-anchor="middle"
+                    fill="white"
+                    font-size="24"
+                    font-weight="bold"
+                  >
+                    J
+                  </text>
+                </svg>
+              </div>
+              <div className="loader">
+                <svg viewBox="0 0 80 80">
+                  <rect x="8" y="8" width="64" height="64"></rect>
+                  <text
+                    x="50%"
+                    y="60%"
+                    text-anchor="middle"
+                    fill="white"
+                    font-size="24"
+                    font-weight="bold"
+                  >
+                    E
+                  </text>
+                </svg>
+              </div>
+              <div className="loader">
+                <svg viewBox="0 0 80 80">
+                  <rect x="8" y="8" width="64" height="64"></rect>
+                  <text
+                    x="50%"
+                    y="60%"
+                    text-anchor="middle"
+                    fill="white"
+                    font-size="24"
+                    font-weight="bold"
+                  >
+                    N
+                  </text>
+                </svg>
+              </div>
+              <div className="loader">
+                <svg viewBox="0 0 80 80">
+                  <rect x="8" y="8" width="64" height="64"></rect>
+                  <text
+                    x="50%"
+                    y="60%"
+                    text-anchor="middle"
+                    fill="white"
+                    font-size="24"
+                    font-weight="bold"
+                  >
+                    Z
                   </text>
                 </svg>
               </div>
             </div>
           )}
-          {item && item.content_type && item.content_type.startsWith("video") ? (
+          {item && item.content_type.startsWith("video") ? (
             <video
               ref={(el) => (videoRefs.current[item.url] = el)}
               src={item.url}
               autoPlay
               muted
               loop
-              playsInline
-              className={`object-cover w-full h-full ${loading ? "hidden" : ""}`}
+              className="w-full h-full object-cover"
               onLoadedData={() => setLoading(false)}
               onError={() => setLoading(false)}
             />
           ) : (
-            item && (
-              <img
-                src={item.url}
-                alt="Screensaver"
-                className={`object-cover w-full h-full ${loading ? "hidden" : ""}`}
-                onLoad={() => setLoading(false)}
-                onError={() => setLoading(false)}
-              />
-            )
+            <img
+              src={item?.url}
+              alt={item?.filename}
+              className="w-full h-full object-cover"
+              onLoad={() => setLoading(false)}
+              onError={() => setLoading(false)}
+            />
           )}
         </animated.div>
       ))}
+
       <button
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
         onClick={handlePrevious}
+        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow-lg"
       >
-        <FontAwesomeIcon icon={faArrowLeft} size="lg" />
+        <FontAwesomeIcon icon={faArrowLeft} />
       </button>
       <button
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
         onClick={handleNext}
+        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow-lg"
       >
-        <FontAwesomeIcon icon={faArrowRight} size="lg" />
+        <FontAwesomeIcon icon={faArrowRight} />
       </button>
-      <style jsx>{`
-        .loader {
-          width: 100px;
-          height: 100px;
-          position: relative;
-        }
-
-        .loader svg {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .loader svg text {
-          font-family: Arial, sans-serif;
-          font-weight: bold;
-          fill: white;
-        }
-      `}</style>
     </div>
   );
 };
