@@ -307,6 +307,7 @@
 // };
 
 // export default ScreenSaver;
+
 import { fetchMedia } from "../services/api";
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -320,7 +321,6 @@ const ScreenSaver = ({ projectId }) => {
   const [loading, setLoading] = useState(true);
   const screenSaverRef = useRef(null);
   const videoRefs = useRef({});
-  const preloadRef = useRef({});
 
   // Transition effects with smooth modern animations
   const transitionEffects = [
@@ -415,7 +415,6 @@ const ScreenSaver = ({ projectId }) => {
     }
   }, [isFullScreen]);
 
-  // Preload and lazy load media
   const preloadNextMedia = (nextIndex) => {
     const nextMedia = mediaFiles[nextIndex];
     if (nextMedia) {
@@ -426,7 +425,6 @@ const ScreenSaver = ({ projectId }) => {
 
       mediaElement.src = nextMedia.url;
       mediaElement.onload = () => {
-        preloadRef.current[nextMedia.url] = mediaElement;
         if (nextIndex === (currentIndex + 1) % mediaFiles.length) {
           setLoading(false);
         }
@@ -487,23 +485,7 @@ const ScreenSaver = ({ projectId }) => {
         >
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              {['U', 'J', 'E', 'N', 'Z', 'I'].map((letter, index) => (
-                <div key={index} className="loader">
-                  <svg viewBox="0 0 80 80">
-                    <rect x="8" y="8" width="64" height="64"></rect>
-                    <text
-                      x="50%"
-                      y="60%"
-                      textAnchor="middle"
-                      fill="white"
-                      fontSize="24"
-                      fontWeight="bold"
-                    >
-                      {letter}
-                    </text>
-                  </svg>
-                </div>
-              ))}
+              <span className="loader"></span>
             </div>
           )}
           {item &&
@@ -551,153 +533,74 @@ const ScreenSaver = ({ projectId }) => {
       </button>
       <style jsx>{`
         .loader {
-          --path: #5980eb;
-          --dot: #f50d05;
-          --duration: 3s;
-          width: 44px;
-          height: 44px;
           position: relative;
-          display: inline-block;
-          margin: 0 16px;
+          width: 108px;
+          display: flex;
+          justify-content: space-between;
         }
 
-        .loader:before {
+        .loader::after,
+        .loader::before {
           content: "";
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          position: absolute;
-          display: block;
-          background: var(--dot);
-          top: 37px;
-          left: 19px;
-          transform: translate(-18px, -18px);
-          animation: dotRect var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
-        }
-
-        .loader svg {
-          display: block;
-          width: 100%;
-          height: 100%;
-        }
-
-        .loader svg rect,
-        .loader svg polygon,
-        .loader svg circle {
-          fill: none;
-          stroke: var(--path);
-          stroke-width: 10px;
-          stroke-linejoin: round;
-          stroke-linecap: round;
-        }
-
-        .loader svg polygon {
-          stroke-dasharray: 145 76 145 76;
-          stroke-dashoffset: 0;
-          animation: pathTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
-        }
-
-        .loader svg rect {
-          stroke-dasharray: 192 64 192 64;
-          stroke-dashoffset: 0;
-          animation: pathRect 3s cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
-        }
-
-        .loader svg circle {
-          stroke-dasharray: 150 50 150 50;
-          stroke-dashoffset: 75;
-          animation: pathCircle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
-        }
-
-        .loader.triangle {
+          display: inline-block;
           width: 48px;
+          height: 48px;
+          background-color: #fff;
+          background-image: radial-gradient(circle 14px, #0d161b 100%, transparent 0);
+          background-repeat: no-repeat;
+          border-radius: 50%;
+          animation: eyeMove 10s infinite, blink 10s infinite;
         }
 
-        .loader.triangle:before {
-          left: 21px;
-          transform: translate(-10px, -18px);
-          animation: dotTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite;
-        }
-
-        @keyframes pathTriangle {
-          33% {
-            stroke-dashoffset: 74;
+        @keyframes eyeMove {
+          0%,
+          10% {
+            background-position: 0px 0px;
           }
-
-          66% {
-            stroke-dashoffset: 147;
+          13%,
+          40% {
+            background-position: -15px 0px;
           }
-
+          43%,
+          70% {
+            background-position: 15px 0px;
+          }
+          73%,
+          90% {
+            background-position: 0px 15px;
+          }
+          93%,
           100% {
-            stroke-dashoffset: 221;
+            background-position: 0px 0px;
           }
         }
 
-        @keyframes dotTriangle {
-          33% {
-            transform: translate(0, 0);
-          }
-
-          66% {
-            transform: translate(10px, -18px);
-          }
-
+        @keyframes blink {
+          0%,
+          10%,
+          12%,
+          20%,
+          22%,
+          40%,
+          42%,
+          60%,
+          62%,
+          70%,
+          72%,
+          90%,
+          92%,
+          98%,
           100% {
-            transform: translate(-10px, -18px);
+            height: 48px;
           }
-        }
-
-        @keyframes pathRect {
-          25% {
-            stroke-dashoffset: 64;
-          }
-
-          50% {
-            stroke-dashoffset: 128;
-          }
-
-          75% {
-            stroke-dashoffset: 192;
-          }
-
-          100% {
-            stroke-dashoffset: 256;
-          }
-        }
-
-        @keyframes dotRect {
-          25% {
-            transform: translate(0, 0);
-          }
-
-          50% {
-            transform: translate(18px, -18px);
-          }
-
-          75% {
-            transform: translate(0, -36px);
-          }
-
-          100% {
-            transform: translate(-18px, -18px);
-          }
-        }
-
-        @keyframes pathCircle {
-          25% {
-            stroke-dashoffset: 125;
-          }
-
-          50% {
-            stroke-dashoffset: 175;
-          }
-
-          75% {
-            stroke-dashoffset: 225;
-          }
-
-          100% {
-            stroke-dashoffset: 275;
+          11%,
+          21%,
+          41%,
+          61%,
+          71%,
+          91%,
+          99% {
+            height: 18px;
           }
         }
       `}</style>
