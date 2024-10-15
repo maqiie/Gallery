@@ -1,0 +1,67 @@
+.project-card {
+    position: relative;
+    width: 100%;
+    min-height: 320px; /* Increased card height */
+    border-radius: 12px;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Hover Effect */
+  .project-card:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Hover Actions */
+  .project-card .hover-actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  /* Show actions on hover */
+  .project-card:hover .hover-actions {
+    opacity: 1;
+  }
+  
+  /* Button Styles */
+  .project-card .hover-actions button {
+    margin: 0 10px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 12px 20px;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  
+  /* Button Hover Effect */
+  .project-card .hover-actions button:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Icon Margin */
+  .project-card .hover-actions button svg {
+    margin-right: 6px;
+  }
+  
+  /* Additional Styles for Responsive Design */
+  @media (max-width: 768px) {
+    .project-card {
+      min-height: 280px; /* Decrease height on smaller screens */
+    }
+    .project-card .hover-actions button {
+      padding: 10px 15px; /* Adjust button size on smaller screens */
+    }
+  }
+  

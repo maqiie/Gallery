@@ -1,8 +1,6 @@
-
 // import { useSprings, animated } from '@react-spring/web';
-// import { fetchMedia, deleteMedia } from '../services/api'; // Ensure deleteMedia is implemented
-// import { useState,useEffect } from 'react';
-
+// import { fetchMedia, deleteMedia } from '../services/api';
+// import { useState, useEffect } from 'react';
 
 // const MediaGallery = ({ projectId }) => {
 //   const [media, setMedia] = useState([]);
@@ -11,23 +9,23 @@
 
 //   useEffect(() => {
 //     const loadMedia = async () => {
-//         setLoading(true);
-//         setError(null);
-//         try {
-//           const response = await fetchMedia(projectId);
-//           if (response.data && Array.isArray(response.data.media_files)) {
-//             setMedia(response.data.media_files);
-//           } else {
-//             setMedia([]); // Handle cases where media_files might be missing
-//           }
-//         } catch (error) {
-//           setError('Error fetching media: ' + error.message);
-//           console.error('Error fetching media:', error);
-//         } finally {
-//           setLoading(false);
+//       setLoading(true);
+//       setError(null);
+//       try {
+//         const response = await fetchMedia(projectId);
+//         if (response.data && Array.isArray(response.data.media_files)) {
+//           setMedia(response.data.media_files);
+//         } else {
+//           setMedia([]); // Handle cases where media_files might be missing
 //         }
-//       };
-      
+//       } catch (error) {
+//         setError('Error fetching media: ' + error.message);
+//         console.error('Error fetching media:', error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
 //     loadMedia();
 //   }, [projectId]);
 
@@ -49,8 +47,8 @@
 //     }
 //   };
 
-//   if (loading) return <p>Loading...</p>;
-//   if (error) return <p>{error}</p>;
+//   if (loading) return <p className="text-center text-white">Loading...</p>;
+//   if (error) return <p className="text-center text-white">{error}</p>;
 
 //   return (
 //     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -84,9 +82,10 @@
 // };
 
 // export default MediaGallery;
-import { useSprings, animated } from '@react-spring/web';
-import { fetchMedia, deleteMedia } from '../services/api';
-import { useState, useEffect } from 'react';
+
+import { fetchMedia, deleteMedia } from "../services/api";
+import { useState, useEffect } from "react";
+import { useSprings, animated } from "@react-spring/web";
 
 const MediaGallery = ({ projectId }) => {
   const [media, setMedia] = useState([]);
@@ -105,13 +104,13 @@ const MediaGallery = ({ projectId }) => {
           setMedia([]); // Handle cases where media_files might be missing
         }
       } catch (error) {
-        setError('Error fetching media: ' + error.message);
-        console.error('Error fetching media:', error);
+        setError("Error fetching media: " + error.message);
+        console.error("Error fetching media:", error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     loadMedia();
   }, [projectId]);
 
@@ -129,7 +128,7 @@ const MediaGallery = ({ projectId }) => {
       await deleteMedia(mediaId); // Ensure this function is correctly implemented
       setMedia(media.filter((item) => item.id !== mediaId));
     } catch (error) {
-      console.error('Error deleting media:', error);
+      console.error("Error deleting media:", error);
     }
   };
 
@@ -137,27 +136,32 @@ const MediaGallery = ({ projectId }) => {
   if (error) return <p className="text-center text-white">{error}</p>;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-      {media.map((item, index) => (
+    <div className="grid grid-cols-3 gap-4">
+      {springs.map((style, index) => (
         <animated.div
-          key={item.id}
-          style={springs[index]}
-          className="relative overflow-hidden rounded-lg shadow-lg"
+          key={media[index].id}
+          style={style}
+          className="relative overflow-hidden"
         >
-          {item.media_type === 'image' ? (
-            <img
-              src={item.file_url}
-              alt="media"
-              className="w-full h-auto object-cover"
+          {media[index].content_type.startsWith("video") ? (
+            <video
+              src={media[index].url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="object-cover w-full h-full"
             />
           ) : (
-            <video controls className="w-full h-auto">
-              <source src={item.file_url} type="video/mp4" />
-            </video>
+            <img
+              src={media[index].url}
+              alt="media"
+              className="object-cover w-full h-full"
+            />
           )}
           <button
-            onClick={() => handleDelete(item.id)}
-            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-700 transition"
+            onClick={() => handleDelete(media[index].id)}
+            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-700"
           >
             &times;
           </button>
