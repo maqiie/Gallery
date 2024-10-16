@@ -234,7 +234,7 @@ const ScreenSaver = ({ projectId }) => {
         if (response.media_files) {
           const mediaFilesWithAbsoluteUrls = response.media_files.map((media) => ({
             ...media,
-            url: new URL(media.url, "https://gallery-db-chi.vercel.app").href,
+            url: new URL(media.url, "https://ujenzi-gallegry-75de7aa1ebe9.herokuapp.com").href,
           }));
           setMediaFiles(mediaFilesWithAbsoluteUrls);
           console.log("Loaded media files:", mediaFilesWithAbsoluteUrls);

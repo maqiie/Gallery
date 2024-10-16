@@ -95,7 +95,7 @@
 import axios from 'axios';
 
 // const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Use environment variable for flexibility
-const API_URL = 'https://gallery-db-chi.vercel.app'; // Replace with your Rails backend URL
+const API_URL = 'https://ujenzi-gallegry-75de7aa1ebe9.herokuapp.com'; // Replace with your Rails backend URL
 
 // Fetch a project by ID, including its media
 export const fetchProjectById = async (projectId) => {

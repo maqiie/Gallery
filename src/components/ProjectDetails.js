@@ -144,7 +144,7 @@ const ProjectDetails = () => {
           {project.media_files.map((media) => (
             <img
               key={media.id}
-              src={`https://gallery-db-chi.vercel.app${media.url}`} // Update URL as necessary
+              src={`https://ujenzi-gallegry-75de7aa1ebe9.herokuapp.com${media.url}`} // Update URL as necessary
               alt={media.name}
               className="w-full h-48 object-cover rounded-lg"
             />
