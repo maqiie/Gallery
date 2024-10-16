@@ -226,7 +226,7 @@ import { toast } from 'react-toastify';
 import { FaTrash, FaEye, FaEdit } from 'react-icons/fa';
 import './ProjectList.css'; // Keep your custom styles if any
 
-const API_URL = "http://localhost:3001"; // Add your API URL
+const API_URL = "https://gallery-db-chi.vercel.app"; // Add your API URL
 
 const ProjectsList = ({ onProjectSelect, onEditProject }) => {
   const [projects, setProjects] = useState([]);

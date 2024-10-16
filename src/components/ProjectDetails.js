@@ -144,7 +144,7 @@ const ProjectDetails = () => {
           {project.media_files.map((media) => (
             <img
               key={media.id}
-              src={`http://localhost:3001${media.url}`} // Update URL as necessary
+              src={`https://gallery-db-chi.vercel.app${media.url}`} // Update URL as necessary
               alt={media.name}
               className="w-full h-48 object-cover rounded-lg"
             />
