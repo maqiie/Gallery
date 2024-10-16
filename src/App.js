@@ -54,21 +54,25 @@
 
 // export default App;
 import React, { useState } from 'react';
-import { FaPlus, FaCamera, FaProjectDiagram } from 'react-icons/fa'; // Importing icons
+import { FaPlus, FaCamera, FaProjectDiagram, FaTrash } from 'react-icons/fa';
 import ProjectForm from './components/ProjectForm';
 import MediaUpload from './components/MediaUpload';
 import MediaGallery from './components/MediaGallery';
 import ScreenSaver from './components/ScreenSaver';
 import ProjectsList from './components/ProjectsList';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import styles for toast notifications
 import './Styles.css';
-
 
 function App() {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projects, setProjects] = useState([]);
 
   // Handle project creation
   const handleProjectCreated = (project) => {
+    setProjects((prevProjects) => [...prevProjects, project]);
     setSelectedProject(project);
+    toast.success('Project created successfully!'); // Success notification
   };
 
   // Handle project selection from the list
@@ -76,10 +80,16 @@ function App() {
     setSelectedProject(project);
   };
 
+  // Handle project deletion
+  const handleProjectDelete = (projectId) => {
+    setProjects((prevProjects) => prevProjects.filter(p => p.id !== projectId));
+    setSelectedProject(null);
+    toast.info('Project deleted successfully!');
+  };
+
   // Handle media upload completion
   const handleMediaUploaded = () => {
-    console.log('Media uploaded successfully!');
-    // Optionally, you can refresh media gallery here or show a success message
+    toast.success('Media uploaded successfully!');
   };
 
   return (
@@ -87,7 +97,7 @@ function App() {
       {/* Header Section */}
       <header className="w-full max-w-6xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white py-10 px-8 rounded-lg shadow-xl mb-12 hover:shadow-2xl transition duration-300">
         <h1 className="text-4xl lg:text-6xl font-bold text-center flex items-center justify-center tracking-tight">
-          <FaCamera className="mr-4" /> UJENZI PHOTOS
+          <FaCamera className="mr-4" /> PROJECTS GALLERY
         </h1>
       </header>
 
@@ -104,13 +114,21 @@ function App() {
         <h2 className="text-3xl lg:text-4xl font-semibold text-gray-800 mb-6 flex items-center">
           <FaProjectDiagram className="mr-3 text-indigo-500" /> Projects List
         </h2>
-        <ProjectsList onProjectSelect={handleProjectSelect} />
+        <ProjectsList projects={projects} onProjectSelect={handleProjectSelect} />
       </section>
 
       {/* Selected Project Details */}
-      {selectedProject && (
+      {selectedProject ? (
         <section className="w-full max-w-6xl bg-white p-8 lg:p-12 rounded-lg shadow-lg mt-12 hover:shadow-xl transition-all duration-300">
-          <h2 className="text-3xl lg:text-4xl font-semibold text-gray-800 mb-6">Project Details</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl lg:text-4xl font-semibold text-gray-800">Project Details</h2>
+            <button
+              onClick={() => handleProjectDelete(selectedProject.id)}
+              className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition duration-300">
+              <FaTrash />
+            </button>
+          </div>
+
           <div className="mb-8">
             <MediaUpload projectId={selectedProject.id} onMediaUploaded={handleMediaUploaded} />
           </div>
@@ -121,7 +139,15 @@ function App() {
             <ScreenSaver projectId={selectedProject.id} />
           </div>
         </section>
+      ) : (
+        <div className="w-full max-w-6xl bg-white p-8 lg:p-12 rounded-lg shadow-lg text-center">
+          <h2 className="text-3xl lg:text-4xl font-semibold text-gray-600">No Project Selected</h2>
+          <p className="text-gray-500 mt-4">Please select a project from the list to view details.</p>
+        </div>
       )}
+
+      {/* Toast Notification Container */}
+      <ToastContainer />
     </div>
   );
 }

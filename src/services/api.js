@@ -94,7 +94,8 @@
 // };
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Use environment variable for flexibility
+// const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Use environment variable for flexibility
+const API_URL = 'http://localhost:3001'; // Replace with your Rails backend URL
 
 // Fetch a project by ID, including its media
 export const fetchProjectById = async (projectId) => {
@@ -187,15 +188,23 @@ export const deleteMedia = async (mediaId) => {
   }
 };
 
-// Upload media to a project
 export const uploadMedia = async (projectId, formData) => {
   try {
-    const response = await axios.post(`${API_URL}/projects/${projectId}/add_media`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    const response = await fetch(`${API_URL}/projects/${projectId}/add_media`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+      },
     });
-    return response.data;
+
+    if (!response.ok) {
+      throw new Error('Failed to upload media');
+    }
+
+    return response.json(); // Handle the response as needed
   } catch (error) {
-    console.error('Error in uploadMedia:', error);
-    throw new Error('Failed to upload media');
+    console.error('Error uploading media:', error);
+    throw error;
   }
 };

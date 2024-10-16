@@ -93,7 +93,6 @@
 
 // export default ProjectForm;
 
-
 import React, { useState } from 'react';
 import { createProject } from '../services/api';
 
@@ -136,16 +135,13 @@ const ProjectForm = ({ onProjectCreated }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 w-full max-w-4xl mx-auto"
+      className="bg-white p-8 rounded-lg shadow-lg border border-gray-300 w-full max-w-4xl mx-auto space-y-6 transition-transform transform hover:scale-105"
     >
-      <h2 className="text-3xl font-semibold mb-6 text-center text-blue-800">Create Project</h2>
-      {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
+      <h2 className="text-4xl font-bold text-center text-blue-900 mb-4">Create Project</h2>
+      {error && <p className="text-red-600 text-center">{error}</p>}
       
-      <div className="mb-6">
-        <label
-          className="block text-gray-800 text-lg font-medium mb-2"
-          htmlFor="title"
-        >
+      <div>
+        <label className="block text-gray-800 text-lg font-medium mb-2" htmlFor="title">
           Project Title
         </label>
         <input
@@ -153,33 +149,27 @@ const ProjectForm = ({ onProjectCreated }) => {
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors duration-300 ease-in-out"
+          className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg"
           required
         />
       </div>
       
-      <div className="mb-6">
-        <label
-          className="block text-gray-800 text-lg font-medium mb-2"
-          htmlFor="description"
-        >
+      <div>
+        <label className="block text-gray-800 text-lg font-medium mb-2" htmlFor="description">
           Project Description
         </label>
         <textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors duration-300 ease-in-out"
+          className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg"
           rows="6"
           required
         />
       </div>
       
-      <div className="mb-6">
-        <label
-          className="block text-gray-800 text-lg font-medium mb-2"
-          htmlFor="images"
-        >
+      <div>
+        <label className="block text-gray-800 text-lg font-medium mb-2" htmlFor="images">
           Upload Images
         </label>
         <input
@@ -187,13 +177,13 @@ const ProjectForm = ({ onProjectCreated }) => {
           id="images"
           multiple
           onChange={handleImageChange}
-          className="w-full p-4 border border-gray-300 rounded-lg file:bg-blue-100 file:text-blue-700 file:border-blue-500 transition-colors duration-300 ease-in-out"
+          className="w-full p-4 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg"
         />
       </div>
       
       <button
         type="submit"
-        className={`bg-blue-700 text-white py-2 px-6 rounded-lg hover:bg-blue-800 transition duration-300 ease-in-out ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out shadow-md hover:shadow-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
         disabled={loading}
       >
         {loading ? 'Creating...' : 'Create Project'}
