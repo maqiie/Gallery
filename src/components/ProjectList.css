@@ -1,67 +1,113 @@
 .project-card {
-    position: relative;
-    width: 100%;
-    min-height: 320px; /* Increased card height */
-    border-radius: 12px;
-    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease-in-out;
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.project-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.project-details {
+  padding: 20px;
+}
+
+.project-details h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.project-details p {
+  font-size: 14px;
+  color: #666;
+}
+
+.hover-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.project-card:hover .hover-actions {
+  opacity: 1;
+}
+
+.hover-actions button {
+  background-color: #4f46e5; /* Indigo */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin: 0 8px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hover-actions button:hover {
+  transform: translateY(-2px);
+  background-color: #4338ca;
+}
+
+.hover-actions button:first-child {
+  background-color: #3b82f6; /* Blue */
+}
+
+.hover-actions button:first-child:hover {
+  background-color: #2563eb;
+}
+
+.hover-actions button:nth-child(2) {
+  background-color: #f59e0b; /* Yellow */
+}
+
+.hover-actions button:nth-child(2):hover {
+  background-color: #d97706;
+}
+
+.hover-actions button:last-child {
+  background-color: #ef4444; /* Red */
+}
+
+.hover-actions button:last-child:hover {
+  background-color: #dc2626;
+}
+
+.hover-actions svg {
+  margin-right: 6px;
+}
+
+@media (max-width: 768px) {
+  .project-card {
+    min-height: 280px;
   }
-  
-  /* Hover Effect */
-  .project-card:hover {
-    transform: scale(1.05);
+
+  .hover-actions button {
+    padding: 8px 12px;
+    font-size: 12px;
   }
-  
-  /* Hover Actions */
-  .project-card .hover-actions {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-  }
-  
-  /* Show actions on hover */
-  .project-card:hover .hover-actions {
-    opacity: 1;
-  }
-  
-  /* Button Styles */
-  .project-card .hover-actions button {
-    margin: 0 10px;
-    font-size: 15px;
-    font-weight: bold;
-    border-radius: 5px;
-    padding: 12px 20px;
-    display: inline-flex;
-    align-items: center;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-  
-  /* Button Hover Effect */
-  .project-card .hover-actions button:hover {
-    transform: translateY(-2px);
-  }
-  
-  /* Icon Margin */
-  .project-card .hover-actions button svg {
-    margin-right: 6px;
-  }
-  
-  /* Additional Styles for Responsive Design */
-  @media (max-width: 768px) {
-    .project-card {
-      min-height: 280px; /* Decrease height on smaller screens */
-    }
-    .project-card .hover-actions button {
-      padding: 10px 15px; /* Adjust button size on smaller screens */
-    }
-  }
-  
+}
